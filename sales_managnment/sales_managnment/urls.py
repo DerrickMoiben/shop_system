@@ -21,7 +21,7 @@ from cashier import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('landing-page/', views.landing_page, name='landing-page'),
-    # path('cashier/', include('cashier.urls')),
+    path('', views.landing_page, name='landing-page'),
+    path('cashier/', include('cashier.urls')),
     # path('manager/', include('manager.urls')),
 ]
