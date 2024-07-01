@@ -1,12 +1,20 @@
 from django.shortcuts import render
 from django.shortcuts import render, redirect
-from .forms import SingupForm, ManagerLoginForm
+from .forms import SingupForm, ManagerLoginForm, StockForm, EmployeeForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 
 # Create your views here.
 def admin_dashboard(request):
-    return render(request, 'admin_dashboard.html')
+    if request.method == 'POST':
+        form = StockForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'The stock was added succefully')
+            return redirect('admin-dashboard')
+    else:
+        form = StockForm()
+    return render(request, 'admin_dashboard.html', {'form': form})
 
 def manager_sing_up(request):
     if request.method == "POST":
@@ -36,3 +44,14 @@ def manager_login(request):
     else:
         form = ManagerLoginForm
     return render(request, 'manager_login.html', {'form': form})
+
+def new_staff(request):
+    if request.method == 'POST':
+        form = EmployeeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'The employee was added succefully')
+            return redirect('new-staff')
+    else:
+        form = EmployeeForm()
+    return render(request, 'new_staff.html', {'form': form})

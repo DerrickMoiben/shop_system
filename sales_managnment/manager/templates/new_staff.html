@@ -1,10 +1,9 @@
-Wozaa testing 
-aloooooooo
+<h2>Employee a new staff John Deer ama namna gani</h2>
+
 <form action="" method="post">
     {% csrf_token %}
-    {{  form.as_p }}
-    <button type="submit">Input  new stock</button>
-
+    {{ form.as_p }}
+    <button type="submit">Add Staff</button>
     {% if messages %}
         <ul>
             {% for message in messages %}
@@ -13,4 +12,3 @@ aloooooooo
         </ul>
     {% endif %}
 </form>
-<a href="{% url 'new-staff' %}">Employee new staff</a>
