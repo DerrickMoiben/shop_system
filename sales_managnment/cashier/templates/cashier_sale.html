@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sell product</title>
+    <style>
+        body {
+            min-width: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            background: teal;
+            width: 30vw;
+            border-radius: 10px;
+            padding: 10px 15px;
+        }
+
+        fieldset {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button {
+            width: 100%;
+            display: block;
+            background: blue;
+            color: white;
+            padding: 10px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        label, input {
+            display: block;
+            margin-block: 5px;
+        }
+
+        input, select {
+            box-sizing: border-box;
+            padding: 5px 10px;
+            height: 10%;
+            width: 100%;
+            border: none;
+            border-radius: 15px;
+        }
+
+        h4 {
+            text-align: center;
+            margin-inline: 5px;
+        }
+
+        hr {
+            display: inline-block;
+            width: 40%;
+        }
+
+        button[type="submit"] {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    
+    <form action="" method="post">
+        <h3>Sell a product</h3>
+        <fieldset>
+            <legend>Item</legend>
+            <div class="product_id">
+                <label for="product_id">Product Id</label>
+                <input type="text" name="product_id" id="product_id" placeholder="eg. A001">
+            </div>
+
+            <div class="quantity">
+                <label for="quantity">Quantity</label>
+                <input type="number" name="quantity" id="quantity">
+            </div>
+        </fieldset>
+
+        <label for="payment_method">Payment Method</label>
+        <select name="payment_method" id="payment_method">
+            <option value="Cash">CASH</option>
+            <option value="M-PESA">M-PESA</option>
+        </select>
+
+        <div id="mpesa" hidden>
+            <label for="confirmation_code">Mpesa Code</label>
+            <input type="text" name="mpesa_code" id="confirmation_code" placeholder="eg. SHR34BIXB5K">
+        </div>
+
+        <label for="amount">Amount</label>
+        <input type="number" name="amount" id="amount" readonly>
+
+        <button type="submit">Checkout</button>
+
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const paymentMethodSelect = document.getElementById('payment_method');
+            const mpesaDiv = document.getElementById('mpesa');
+            const confirmationCodeInput = document.getElementById('confirmation_code');
+
+            paymentMethodSelect.addEventListener('change', (event) => {
+                const selectedMethod = event.target.value;
+
+                if (selectedMethod === 'M-PESA') {
+                    mpesaDiv.removeAttribute('hidden');
+                    confirmationCodeInput.setAttribute('required', 'required');
+                } else if (selectedMethod === 'Cash') {
+                    mpesaDiv.setAttribute('hidden', 'hidden');
+                    confirmationCodeInput.removeAttribute('required');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

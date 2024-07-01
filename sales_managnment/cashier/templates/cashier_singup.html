@@ -1,5 +1,79 @@
-<form action="" method="post">
-    {% csrf_token %}
-    {{form}}
-    <button type="submit">submit</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- <link rel="stylesheet" href="../static/css/main.css"> -->
+    <style>
+
+        body {
+            min-width: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            background: teal;
+            width: 30vw;
+            height: 45vh;
+            border-radius: 10px;
+            padding: 10px 15px;
+        }
+
+        button {
+            width: 100%;
+            display: block;
+            background: blue;
+            color: white;
+            padding: 10px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        label, input {
+            display: block;
+            margin-block: 5px;
+        }
+
+        input {
+            box-sizing: border-box;
+            padding: 5px 10px;
+            height: 10%;
+            width: 100%;
+            border: none;
+            border-radius: 15px;
+        }
+
+        h4 {
+            text-align: center;
+            margin-inline: 5px;
+        }
+
+        hr {
+            display: inline-block;
+            width: 40%;
+        }
+
+        button[type="submit"] {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body style="min-height: 100vh;">
+    <form action="" method="post">
+        {% csrf_token %}
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" placeholder="Enter your username">
+        <label for="pass1">Password</label>
+        <input type="password" name="password1" id="pass1" placeholder="Avoid common passwords like 1234567890">
+        <label for="pass2">Confirm password</label>
+        <input type="password" name="password2" id="pass2" placeholder="Retype the password">
+        <button type="submit">Signup</button>
+    </form> 
+</body>
+</html>

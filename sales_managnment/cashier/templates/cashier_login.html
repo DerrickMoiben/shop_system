@@ -1,5 +1,78 @@
-<form action="" method="post">
-    {% csrf_token %}
-    {{form}}
-    <button type="submit">submit</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../static/css/main.css">
+    <style>
+
+        body {
+            min-width: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            background: teal;
+            width: 30vw;
+            height: 45vh;
+            border-radius: 10px;
+            padding: 10px 15px;
+        }
+
+        button {
+            width: 100%;
+            display: block;
+            background: blue;
+            color: white;
+            padding: 10px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        label, input {
+            display: block;
+            margin-block: 5px;
+        }
+
+        input {
+            padding: 5px 10px;
+            height: 10%;
+            width: 100%;
+            border: none;
+            border-radius: 15px;
+        }
+
+        h4 {
+            text-align: center;
+            margin-inline: 5px;
+        }
+
+        hr {
+            display: inline-block;
+            width: 40%;
+        }
+
+        button[type="submit"] {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body style="min-height: 100vh;">
+    <form action="" method="post">
+        {% csrf_token %}
+        <label for="usernmane">Username</label>
+        <input type="text" name="username" id="Username" placeholder="Enter your usrename">
+        <label for="passoword">password</label>
+        <input type="password" name="password" id="password">
+        <button type="submit">Login</button>
+        <h4><hr>OR <hr></h4>
+        <a href="../templates/cashier_singup.html"><button type="button">Signup</button></a>
+    </form>
+</body>
+</html>

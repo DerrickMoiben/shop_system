@@ -6,6 +6,7 @@
 :root {
     /* Light theme colors */
     --navbar-color-light: #3B4013;
+    --navbar-text-light: #F2EAE4;
     --background-color-light: #F2EAE4;
     --text-color-light: #000000;
     --link-color-light: #0066CC;
@@ -103,7 +104,7 @@ nav {
 
 nav .logo a {
     text-decoration: none;
-    color: var(--text-color);
+    color: var(--navbar-text-light);
 }
 
 nav .nav-links ul {
@@ -117,6 +118,6 @@ nav ul li {
 }
 
 nav ul li a {
-    color: var(--text-color);
+    color: var(--navbar-text-light);
     text-decoration: none;
 }
