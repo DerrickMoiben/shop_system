@@ -2,13 +2,14 @@ from django.shortcuts import render, redirect
 from .forms import SingupForm, LoginForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 import json
 from .models import Product, Sale
 from .forms import SaleForm, SaleItemForm
 from django.http import JsonResponse
 
-"""This modele is the landing page view when one clicks and opens the software."""
 def landing_page(request):
+    """This modele is the landing page view when one clicks and opens the software."""
     return render(request, 'landing_page.html')
 
 def cashier_sing_up(request):

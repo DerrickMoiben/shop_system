@@ -27,6 +27,10 @@
             align-items: center;
         }
 
+        #mpesa {
+            transition: all 0.5s;
+        }
+
         button {
             width: 100%;
             display: block;
@@ -52,7 +56,7 @@
             border-radius: 15px;
         }
 
-        h4 {
+        h4, h3 {
             text-align: center;
             margin-inline: 5px;
         }
@@ -69,20 +73,25 @@
 </head>
 <body>
     
-    <form action="" method="post">
+    <form action="" id="myform" method="post">
+        {% csrf_token %}
+        <p id="message"></p>
         <h3>Sell a product</h3>
         <fieldset>
-            <legend>Item</legend>
+            <legend>Item(s)</legend>
             <div class="product_id">
                 <label for="product_id">Product Id</label>
                 <input type="text" name="product_id" id="product_id" placeholder="eg. A001">
+                <input type="text" name="product_id2" id="" placeholder="eg. A001">
             </div>
 
             <div class="quantity">
                 <label for="quantity">Quantity</label>
                 <input type="number" name="quantity" id="quantity">
+                <input type="number" name="quantity2" id="">
             </div>
         </fieldset>
+        <p><button type="button" id="btnadd">Add</button></p>
 
         <label for="payment_method">Payment Method</label>
         <select name="payment_method" id="payment_method">
@@ -119,6 +128,49 @@
                     confirmationCodeInput.removeAttribute('required');
                 }
             });
+
+            const addbtn = document.getElementById('btnadd')
+
+            addbtn.addEventListener('click', function() {
+
+            })
+
+            document.getElementById('myform').addEventListener('submit', function(evevt) {
+                event.preventDefault()
+                form = document.getElementById('myform')
+                formdata = new FormData(form)
+                
+                fetch("{% url 'sell' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: formdata
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('message').textContent = data.message
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            })
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
         });
     </script>
 </body>

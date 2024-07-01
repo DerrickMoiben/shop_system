@@ -3,8 +3,9 @@ from django.shortcuts import render, redirect
 from .forms import SingupForm, ManagerLoginForm, StockForm, EmployeeForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
+from .models import Stock
+from django.shortcuts import get_object_or_404
 
-# Create your views here.
 def admin_dashboard(request):
     if request.method == 'POST':
         form = StockForm(request.POST)
@@ -55,3 +56,21 @@ def new_staff(request):
     else:
         form = EmployeeForm()
     return render(request, 'new_staff.html', {'form': form})
+
+def all_stock(request):
+    stocks = Stock.objects.all()
+    return render(request, 'all_stock.html', {'stocks': stocks})
+
+def edit_stock(request, stock_id):
+    stock = get_object_or_404(Stock, id = stock_id)
+
+    if request.method == 'POST':
+        stock.product_name = request.POST['product_name']
+        stock.product_id = request.POST['product_id']
+        stock.product_quantity = request.POST['product_quantity']
+        stock.product_price = request.POST['product_price']
+        stock.save()
+        messages.success(request, 'The stock was updated succefully')
+        return redirect('all-stock')
+    
+    return render(request, 'edit_stock.html', {'stock': stock})
