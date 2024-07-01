@@ -1,0 +1,70 @@
+<!-- cashier/templates/cashier/record_sale.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Record Sale</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#add_item').click(function() {
+                var formData = $('#item_form').serialize();
+                $.post("{% url 'add_sale_item' %}", formData, function(response) {
+                    if (response.status === 'success') {
+                        var newRow = '<tr>' +
+                                     '<td>' + response.data.product + '</td>' +
+                                     '<td>' + response.data.quantity + '</td>' +
+                                     '</tr>';
+                        $('#items_table tbody').append(newRow);
+                        var items = JSON.parse($('#id_items').val() || '[]');
+                        items.push(response.data);
+                        $('#id_items').val(JSON.stringify(items));
+                    } else {
+                        alert('Error: ' + JSON.stringify(response.errors));
+                    }
+                });
+            });
+
+            $('#payment_method').change(function() {
+                if ($(this).val() === 'bank') {
+                    $('#payment_code_group').show();
+                } else {
+                    $('#payment_code_group').hide();
+                }
+            }).change();
+        });
+    </script>
+</head>
+<body>
+    <h1>Record Sale</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div id="payment_code_group" style="display:none;">
+            <label for="id_payment_code">Payment Code:</label>
+            <input type="text" name="payment_code" id="id_payment_code">
+        </div>
+        <button type="submit">Make Sale</button>
+    </form>
+
+    <h2>Add Items</h2>
+    <form id="item_form">
+        {% csrf_token %}
+        {{ item_form.as_p }}
+        <button type="button" id="add_item">Add Item</button>
+    </form>
+
+    <h2>Sale Items</h2>
+    <table id="items_table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</body>
+</html>
