@@ -1,0 +1,48 @@
+<h2>List of all  stock in the shelf John Deer</h2>
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid black;
+        padding: 5px;
+    }
+
+    th {
+        background: rgb(0, 128, 58);
+        color: white;
+    }
+
+    tr:nth-child(even) {
+        background: lightgray;
+    }
+</style>
+
+{% if stocks %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Product ID</th>
+                <th>Price</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in stocks %}
+                <tr>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ item.product_quantity }}</td>
+                    <td>{{ item.product_id }}</td>
+                    <td>{{ item.product_price }}</td>
+                    <td><a href="{% url 'edit-stock' item.id %}">Edit</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No stock available</p>
+{% endif %}
