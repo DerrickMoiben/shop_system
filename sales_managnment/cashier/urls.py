@@ -7,4 +7,5 @@ urlpatterns = [
     path('cashier-login/', views.cashier_login, name='cashier-login'),
     path('cashier-dashboard/', views.cashier_dashboard, name='cashier-dashboard'),
     path('add-sale-item/', views.add_sale_item, name='add_sale_item'),
+    path('sell_item/', views.sell_item, name='sell'),
 ]

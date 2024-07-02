@@ -101,11 +101,11 @@
 
         <div id="mpesa" hidden>
             <label for="confirmation_code">Mpesa Code</label>
-            <input type="text" name="mpesa_code" id="confirmation_code" placeholder="eg. SHR34BIXB5K">
+            <input type="text" id="confirmation_code" placeholder="eg. SHR34BIXB5K">
         </div>
 
         <label for="amount">Amount</label>
-        <input type="number" name="amount" id="amount" readonly>
+        <input type="number" id="amount" readonly>
 
         <button type="submit">Checkout</button>
 
@@ -123,9 +123,11 @@
                 if (selectedMethod === 'M-PESA') {
                     mpesaDiv.removeAttribute('hidden');
                     confirmationCodeInput.setAttribute('required', 'required');
+                    confirmationCodeInput.setAttribute('name', 'mpesa_code')
                 } else if (selectedMethod === 'Cash') {
                     mpesaDiv.setAttribute('hidden', 'hidden');
                     confirmationCodeInput.removeAttribute('required');
+                    confirmationCodeInput.removeAttribute('name')
                 }
             });
 
@@ -137,8 +139,15 @@
 
             document.getElementById('myform').addEventListener('submit', function(evevt) {
                 event.preventDefault()
-                form = document.getElementById('myform')
-                formdata = new FormData(form)
+                const form = document.getElementById('myform')
+                const formdata = new FormData(form)
+
+                const data = {};
+        
+                formData.forEach((value, key) => {
+                    data[key] = value;
+                });
+        
                 
                 fetch("{% url 'sell' %}", {
                     method: 'POST',
@@ -146,7 +155,7 @@
                         'Content-Type': 'application/json',
                         'X-CSRFToken': getCookie('csrftoken'),
                     },
-                    body: formdata
+                    body: JSON.stringify(formdata)
                 })
                 .then(response => response.json())
                 .then(data => {

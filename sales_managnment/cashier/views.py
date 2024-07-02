@@ -82,3 +82,19 @@ def add_sale_item(request):
             return JsonResponse({'status': 'error', 'errors': form.errors})
 
     return JsonResponse({'status': 'error', 'errors': 'Invalid request method'})
+
+@csrf_exempt
+def sell_item(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.POST)
+            print(request.POST)
+            print(data)
+            return JsonResponse({'message': 'success'})
+        except json.JSONDecodeError as e:
+            return JsonResponse({'message': 'error', 'error': str(e)}, status=400)
+        except Exception as e:
+            return JsonResponse({'message': 'error', 'error': str(e)}, status=400)
+        
+    else:
+        return render(request, 'cashier_sale.html')

@@ -1,1 +1,12 @@
-hiii ni ya login ya admin
+<body style="min-height: 100vh;">
+    <form action="" method="post">
+        {% csrf_token %}
+        <label for="usernmane">Username</label>
+        <input type="text" name="username" id="Username" placeholder="Enter your usrename">
+        <label for="passoword">password</label>
+        <input type="password" name="password" id="password">
+        <button type="submit">Login</button>
+        <h4><hr>OR <hr></h4>
+        <a href="{% url 'manager-sign-up' %}"><button type="button">Signup</button></a>
+    </form>
+</body>
