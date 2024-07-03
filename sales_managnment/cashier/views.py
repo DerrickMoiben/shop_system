@@ -87,10 +87,9 @@ def add_sale_item(request):
 def sell_item(request):
     if request.method == 'POST':
         try:
-            data = json.loads(request.POST)
-            print(request.POST)
+            data = json.loads(request.body)
             print(data)
-            return JsonResponse({'message': 'success'})
+            return JsonResponse({'message': 'success'}, status= 302)
         except json.JSONDecodeError as e:
             return JsonResponse({'message': 'error', 'error': str(e)}, status=400)
         except Exception as e:

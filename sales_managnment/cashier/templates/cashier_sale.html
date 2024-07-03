@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sell product</title>
+    <!-- <link rel="stylesheet" href="../static/css/webfonts/fontawesome.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> -->
+    <link rel="stylesheet" href="../static/css/webfonts/css/all.min.css">
+    
     <style>
         body {
             min-width: 100vh;
@@ -23,6 +27,7 @@
 
         fieldset {
             display: flex;
+            gap: 5px;
             justify-content: space-between;
             align-items: center;
         }
@@ -69,6 +74,19 @@
         button[type="submit"] {
             margin-top: 15px;
         }
+
+        .btndel {
+            height: 10%;
+            margin: 0;
+            background-color: rgb(187, 23, 23);
+            border-radius: 5px;
+        }
+
+        .quantity {
+            margin: 0;
+            display: flex;
+            gap: 4px;
+        }
     </style>
 </head>
 <body>
@@ -79,16 +97,17 @@
         <h3>Sell a product</h3>
         <fieldset>
             <legend>Item(s)</legend>
-            <div class="product_id">
+            <div class="product">
                 <label for="product_id">Product Id</label>
                 <input type="text" name="product_id" id="product_id" placeholder="eg. A001">
-                <input type="text" name="product_id2" id="" placeholder="eg. A001">
             </div>
 
-            <div class="quantity">
+            <div class="quantitybox">
                 <label for="quantity">Quantity</label>
-                <input type="number" name="quantity" id="quantity">
-                <input type="number" name="quantity2" id="">
+                <div class="quantity">
+                    <input type="number" name="quantity" id="quantity">
+                    <button type="button" class="btndel" data-id="1" onclick="delFunction(this)">Remove</button>
+                </div>
             </div>
         </fieldset>
         <p><button type="button" id="btnadd">Add</button></p>
@@ -107,7 +126,7 @@
         <label for="amount">Amount</label>
         <input type="number" id="amount" readonly>
 
-        <button type="submit">Checkout</button>
+        <button type="button" onclick="formSubmit()">Checkout</button>
 
     </form>
 
@@ -131,56 +150,129 @@
                 }
             });
 
-            const addbtn = document.getElementById('btnadd')
+            document.getElementById('btnadd').addEventListener('click', function () {
+                const productContainer = document.querySelector('.product');
+                const quantityContainer = document.querySelector('.quantitybox')
+                const quantity = document.querySelector('.quantity')
+            
+                const newProductInput = document.createElement('input');
+                newProductInput.setAttribute('type', 'text');
+                newProductInput.setAttribute('name', 'product_id');
+                newProductInput.setAttribute('placeholder', 'eg. A001');
+                newProductInput.setAttribute('required', 'required')
+                productContainer.appendChild(newProductInput);
+            
+                const newQuantityInput = document.createElement('input');
+                newQuantityInput.setAttribute('type', 'number');
+                newQuantityInput.setAttribute('name', 'quantity');
+                quantityContainer.appendChild(newQuantityInput);
 
-            addbtn.addEventListener('click', function() {
+                const rowDelete = document.createElement('button')
+                rowDelete.setAttribute('class', 'btndel')
+                rowDelete.setAttribute('type', 'button')
+                rowDelete.setAttribute('onclick', 'delFunction()')
+                rowDelete.textContent = 'Remove'
+                quantityContainer.appendChild(rowDelete)
+            });
+            
+        });
 
+        document.getElementById('myform').addEventListener('submit', function(evevt) {
+            event.preventDefault()
+            const form = document.getElementById('myform')
+            const formdata = new FormData(form)
+            console.log(formdata)
+
+            const data = {};
+    
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            const message = {message: 'Success', text: 'This has been a success'}
+    
+            
+            fetch("{% url 'sell' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('message').textContent = data.message
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        })
+
+        function formSubmit() {
+            const form = document.getElementById('myform')
+            const formdata = new FormData(form)
+            var producsIds = document.querySelectorAll('input[name="product_id"]')
+            var quantities = document.querySelectorAll('input[name="quantity"]')
+
+            var productValues = []
+            var quantityValues = []
+
+            quantities.forEach(function(input) {
+                quantityValues.push(input.value)
             })
 
-            document.getElementById('myform').addEventListener('submit', function(evevt) {
-                event.preventDefault()
-                const form = document.getElementById('myform')
-                const formdata = new FormData(form)
-
-                const data = {};
-        
-                formData.forEach((value, key) => {
-                    data[key] = value;
-                });
-        
-                
-                fetch("{% url 'sell' %}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken'),
-                    },
-                    body: JSON.stringify(formdata)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('message').textContent = data.message
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
+            producsIds.forEach(function(input) {
+                productValues.push(input.value)
             })
 
-            function getCookie(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
+            const data = {};
+    
+            formdata.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            data.product_id = productValues
+            data.quantity = quantityValues
+    
+            
+            fetch("{% url 'sell' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('message').textContent = data.message
+                //form.reset()
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });            
+        }
+
+        function delFunction(button) {
+            var id = button.dataset.id
+            console.log(id)
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
                     }
                 }
-                return cookieValue;
             }
-        });
+            return cookieValue;
+        }
     </script>
 </body>
 </html>
