@@ -89,6 +89,27 @@ def sell_item(request):
         try:
             data = json.loads(request.body)
             print(data)
+            data_pair = []
+            product_ids = data['product_id']
+            quantities = data['quantity']
+            payment_method = data['payment_method']
+
+            total = len(product_ids)
+            print(total)
+            total -= 1
+            current = 0
+
+            if total == 0:
+                print(product_ids)
+                print(quantities)
+            else:
+                while current <= total:
+                    data_pair.append(product_ids[current])
+                    data_pair.append(quantities[current])
+                    print(data_pair)
+                    data_pair.clear()
+                    current += 1
+
             return JsonResponse({'message': 'success'}, status= 302)
         except json.JSONDecodeError as e:
             return JsonResponse({'message': 'error', 'error': str(e)}, status=400)
