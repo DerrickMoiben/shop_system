@@ -100,22 +100,22 @@
             <legend>Item(s)</legend>
             <div class="product">
                 <label for="product_id">Product Id</label>
-                <input type="text" name="product_id" id="product_id" placeholder="eg. A001">
+                <input type="text" name="product_id" id="product_id" placeholder="eg. A001" data-id="0">
             </div>
 
             <div class="quantitybox">
                 <label for="quantity">Quantity</label>
                 <div class="quantity">
-                    <input type="number" name="quantity" id="quantity">
-                    <button type="button" class="btndel" data-id="1" onclick="delFunction(this)">
-                        <!-- <i class="fas fa-trash-alt"></i> -->
+                    <input type="number" name="quantity" id="quantity" data-id="0">
+                    <button type="button" class="btndel" data-id="0" onclick="delFunction(this)">
+                        <i class="fas fa-trash-alt"></i>
                         Remove
                     </button>
                 </div>
             </div>
         </fieldset>
         <p>
-            <button type="button" id="btnadd">
+            <button type="button" id="btnadd" onclick="addFunction()">
                 <i class="far fa-circle-plus"></i>
                 Add
             </button>
@@ -135,7 +135,7 @@
         <label for="amount">Amount</label>
         <input type="number" id="amount" readonly>
 
-        <button type="submit" onclick="forSubmit()">Checkout</button>
+        <button type="submit">Checkout</button>
 
     </form>
 
@@ -157,31 +157,6 @@
                     confirmationCodeInput.removeAttribute('required');
                     confirmationCodeInput.removeAttribute('name')
                 }
-            });
-
-            document.getElementById('btnadd').addEventListener('click', function () {
-                const productContainer = document.querySelector('.product');
-                const quantityContainer = document.querySelector('.quantitybox')
-                const quantity = document.querySelector('.quantity')
-            
-                const newProductInput = document.createElement('input');
-                newProductInput.setAttribute('type', 'text');
-                newProductInput.setAttribute('name', 'product_id');
-                newProductInput.setAttribute('placeholder', 'eg. A001');
-                newProductInput.setAttribute('required', 'required')
-                productContainer.appendChild(newProductInput);
-            
-                const newQuantityInput = document.createElement('input');
-                newQuantityInput.setAttribute('type', 'number');
-                newQuantityInput.setAttribute('name', 'quantity');
-                quantityContainer.appendChild(newQuantityInput);
-
-                const rowDelete = document.createElement('button')
-                rowDelete.setAttribute('class', 'btndel')
-                rowDelete.setAttribute('type', 'button')
-                rowDelete.setAttribute('onclick', 'delFunction()')
-                rowDelete.textContent = 'Remove'
-                quantityContainer.appendChild(rowDelete)
             });
             
         });
@@ -233,6 +208,37 @@
             });
         })
 
+        //The function to add fields to the form
+        var cur_id = 1
+        function addFunction () {
+            const productContainer = document.querySelector('.product');
+            const quantityContainer = document.querySelector('.quantitybox')
+            const quantity = document.querySelector('.quantity')
+        
+            const newProductInput = document.createElement('input');
+            newProductInput.setAttribute('type', 'text');
+            newProductInput.setAttribute('name', 'product_id');
+            newProductInput.setAttribute('placeholder', 'eg. A001');
+            newProductInput.setAttribute('required', 'required')
+            newProductInput.setAttribute('data-id', `${cur_id}`)
+            productContainer.appendChild(newProductInput);
+        
+            const newQuantityInput = document.createElement('input');
+            newQuantityInput.setAttribute('type', 'number');
+            newQuantityInput.setAttribute('name', 'quantity');
+            newQuantityInput.setAttribute('data-id', `${cur_id}`)
+            quantityContainer.appendChild(newQuantityInput);
+
+            const rowDelete = document.createElement('button')
+            rowDelete.setAttribute('class', 'btndel')
+            rowDelete.setAttribute('type', 'button')
+            rowDelete.setAttribute('onclick', 'delFunction(this)')
+            rowDelete.setAttribute('data-id', `${cur_id}`)
+            rowDelete.textContent = 'Remove'
+            quantityContainer.appendChild(rowDelete)
+            cur_id += 1
+        }
+
         function formSubmit() {
             const form = document.getElementById('myform')
             const formdata = new FormData(form)
@@ -281,7 +287,16 @@
 
         function delFunction(button) {
             var id = button.dataset.id
-            console.log(id)
+            
+            var elements = document.querySelectorAll('[data-id]')
+
+            var filtered = Array.from(elements).filter(function(element) {
+                return element.getAttribute('data-id') === id
+            })
+
+            filtered.forEach(function(element) {
+                element.remove()
+            });
         }
 
         function getCookie(name) {
