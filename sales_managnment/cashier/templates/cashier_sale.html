@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sell product</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- <link rel="stylesheet" href="{% static 'css/webfonts/all.min.css' %}"> -->
     
     <style>
         body {
@@ -78,14 +77,36 @@
         .btndel {
             height: 10%;
             margin: 0;
+            padding-block: 0;
             background-color: rgb(187, 23, 23);
             border-radius: 5px;
         }
 
         .quantity {
             margin: 0;
+            padding: 0;
+        }
+        
+        .inner {
+            margin: 0;
+            padding: 0;
             display: flex;
-            gap: 4px;
+            align-items: flex-start;
+            gap: 5px;
+            justify-content: space-between;
+        }
+        
+        .inner input {
+            flex: 2;
+        }
+        
+        .inner button {
+            flex: 1;
+        }
+        
+        #message, #error {
+            margin: 0;
+            transition: all 0.5s;
         }
     </style>
 </head>
@@ -93,8 +114,8 @@
     
     <form action="" id="myform" method="post">
         {% csrf_token %}
-        <p id="message"></p>
-        <p id="error"></p>
+        <p id="message" style="display: none;"></p>
+        <p id="error" style="display: none;"></p>
         <h3>Sell a product</h3>
         <fieldset>
             <legend>Item(s)</legend>
@@ -106,17 +127,16 @@
             <div class="quantitybox">
                 <label for="quantity">Quantity</label>
                 <div class="quantity">
-                    <input type="number" name="quantity" id="quantity" data-id="0">
-                    <button type="button" class="btndel" data-id="0" onclick="delFunction(this)">
-                        <i class="fas fa-trash-alt"></i>
-                        Remove
-                    </button>
+                    <div class="inner">
+                        <input type="number" name="quantity" id="quantity" data-id="0">
+                        <button type="button" class="btndel" data-id="0" onclick="delFunction(this)">Remove</button>                        
+                    </div>
                 </div>
             </div>
         </fieldset>
         <p>
             <button type="button" id="btnadd" onclick="addFunction()">
-                <i class="far fa-circle-plus"></i>
+                <i class="fas fa-plus-circle fa-1x"></i>
                 Add
             </button>
         </p>
@@ -135,7 +155,10 @@
         <label for="amount">Amount</label>
         <input type="number" id="amount" readonly>
 
-        <button type="submit">Checkout</button>
+        <button type="submit">
+            <i class="fa fa-shopping-cart"></i>
+            Checkout
+        </button>
 
     </form>
 
@@ -199,9 +222,17 @@
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('message').textContent = data.message
-                document.getElementById('error').textContent = data.error
-                //form.reset()
+                var success = document.getElementById('message')
+                success.style.display = 'block'
+                success.textContent = data.message
+                
+                if (data.error) {
+                    var error = document.getElementById('error')
+                    error.style.display = 'block'
+                    error.textContent = data.error
+                }
+
+                form.reset()
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -214,6 +245,11 @@
             const productContainer = document.querySelector('.product');
             const quantityContainer = document.querySelector('.quantitybox')
             const quantity = document.querySelector('.quantity')
+            
+            const x = document.createElement('div')
+            x.setAttribute('data-id', `${cur_id}`)
+            x.setAttribute('class', 'inner')
+            quantityContainer.appendChild(x)
         
             const newProductInput = document.createElement('input');
             newProductInput.setAttribute('type', 'text');
@@ -227,7 +263,7 @@
             newQuantityInput.setAttribute('type', 'number');
             newQuantityInput.setAttribute('name', 'quantity');
             newQuantityInput.setAttribute('data-id', `${cur_id}`)
-            quantityContainer.appendChild(newQuantityInput);
+            x.appendChild(newQuantityInput)
 
             const rowDelete = document.createElement('button')
             rowDelete.setAttribute('class', 'btndel')
@@ -235,7 +271,9 @@
             rowDelete.setAttribute('onclick', 'delFunction(this)')
             rowDelete.setAttribute('data-id', `${cur_id}`)
             rowDelete.textContent = 'Remove'
-            quantityContainer.appendChild(rowDelete)
+            x.appendChild(rowDelete)
+            
+
             cur_id += 1
         }
 

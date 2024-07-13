@@ -8,9 +8,11 @@ from .models import Product, Sale
 from .forms import SaleForm, SaleItemForm
 from django.http import JsonResponse
 
+
 def landing_page(request):
     """This modele is the landing page view when one clicks and opens the software."""
     return render(request, 'landing_page.html')
+
 
 def cashier_sing_up(request):
     if request.method == "POST":
@@ -22,6 +24,7 @@ def cashier_sing_up(request):
     else:
         form = SingupForm()
     return render(request, 'cashier_singup.html', {'form': form})
+
 
 def cashier_login(request):
     if request.method == "POST":
@@ -41,6 +44,7 @@ def cashier_login(request):
         form = LoginForm
     return render(request, 'cashier_login.html', {'form': form})
 
+
 def cashier_dashboard(request):
     if request.method == 'POST':
         form = SaleForm(request.POST)
@@ -59,7 +63,7 @@ def cashier_dashboard(request):
                 total_price += product.product_price * quantity
                 product.product_quantity -= quantity
                 product.save()
-                
+
             for i in item:
                 product = Product.objects.get(id=i['product'])
                 quantity = i['quantity']
@@ -73,6 +77,7 @@ def cashier_dashboard(request):
     items = SaleItemForm()
     return render(request, 'cashier_dashboard.html', {'form': form, 'items': items})
 
+
 def add_sale_item(request):
     if request.method == 'POST':
         form = SaleItemForm(request.POST)
@@ -83,19 +88,18 @@ def add_sale_item(request):
 
     return JsonResponse({'status': 'error', 'errors': 'Invalid request method'})
 
+
 @csrf_exempt
 def sell_item(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            print(data)
             data_pair = []
             product_ids = data['product_id']
             quantities = data['quantity']
             payment_method = data['payment_method']
 
             total = len(product_ids)
-            print(total)
             total -= 1
             current = 0
 
@@ -106,15 +110,14 @@ def sell_item(request):
                 while current <= total:
                     data_pair.append(product_ids[current])
                     data_pair.append(quantities[current])
-                    print(data_pair)
                     data_pair.clear()
                     current += 1
 
-            return JsonResponse({'message': 'success'}, status= 302)
+            return JsonResponse({'message': 'success'}, status=302)
         except json.JSONDecodeError as e:
             return JsonResponse({'message': 'error', 'error': str(e)}, status=400)
         except Exception as e:
             return JsonResponse({'message': 'error', 'error': str(e)}, status=400)
-        
+
     else:
         return render(request, 'cashier_sale.html')
