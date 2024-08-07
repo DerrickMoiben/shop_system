@@ -4,9 +4,11 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 import json
-from .models import Product, Sale
-from .forms import SaleForm, SaleItemForm
+from .models import Sales
+from .forms import SaleForm
 from django.http import JsonResponse
+from manager.forms import StockForm
+from manager.models import Stock
 
 def landing_page(request):
     """This modele is the landing page view when one clicks and opens the software."""
@@ -41,60 +43,35 @@ def cashier_login(request):
         form = LoginForm
     return render(request, 'cashier_login.html', {'form': form})
 
+from django.contrib import messages
+
 def cashier_dashboard(request):
     if request.method == 'POST':
         form = SaleForm(request.POST)
         if form.is_valid():
-            item = json.loads(form.cleaned_data.get('item'))
-            payment_method = form.cleaned_data.get('payment_method')
-            payment_code = form.cleaned_data.get('payment_code')
-            total_price = 0
-
-            for i in item:
-                product = Product.objects.get(id=i['product'])
-                quantity = i['quantity']
-                if quantity > product.product_quantity:
-                    messages.error(request, f'The quantity of {product.product_name} is not enough')
-                    return redirect('cashier-dashboard')
-                total_price += product.product_price * quantity
-                product.product_quantity -= quantity
-                product.save()
+            sale = form.save(commit=False)
+            if sale.payment_method == 'Mpesa' and not sale.mpesa_code:
+                form.add_error('mpesa_code', 'Mpesa code is required for Mpesa payments.')
+            else:
+                # Retrieve the stock item instance
+                stock_item = sale.stock_item
                 
-            for i in item:
-                product = Product.objects.get(id=i['product'])
-                quantity = i['quantity']
-                sale = Sale(product=product, quantity=quantity, total_price=total_price, payment_method=payment_method)
-                sale.save()
-
-            messages.success(request, 'The sale was made successfully')
-            return redirect('cashier-dashboard')
+                # Check stock availability
+                if stock_item.product_quantity < sale.quantity_sold:
+                    form.add_error('quantity_sold', 'There is not enough stock to complete this sale.')
+                    messages.error(request, 'There is not enough stock to complete this sale.')
+                else:
+                    sale.save()
+                    messages.success(request, 'Sale was successful.')
+                    return redirect('cashier-dashboard')
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
         form = SaleForm()
-    items = SaleItemForm()
-    return render(request, 'cashier_dashboard.html', {'form': form, 'items': items})
 
-def add_sale_item(request):
-    if request.method == 'POST':
-        form = SaleItemForm(request.POST)
-        if form.is_valid():
-            return JsonResponse({'status': 'success', 'data': form.cleaned_data})
-        else:
-            return JsonResponse({'status': 'error', 'errors': form.errors})
+    return render(request, 'cashier_dashboard.html', {'form': form})
 
-    return JsonResponse({'status': 'error', 'errors': 'Invalid request method'})
 
-@csrf_exempt
-def sell_item(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.POST)
-            print(request.POST)
-            print(data)
-            return JsonResponse({'message': 'success'})
-        except json.JSONDecodeError as e:
-            return JsonResponse({'message': 'error', 'error': str(e)}, status=400)
-        except Exception as e:
-            return JsonResponse({'message': 'error', 'error': str(e)}, status=400)
-        
-    else:
-        return render(request, 'cashier_sale.html')
+def sales_summary(request):
+    sales = Sales.objects.all()
+    return render(request, 'sales_summary.html', {'sales': sales})

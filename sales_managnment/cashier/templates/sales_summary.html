@@ -1,0 +1,48 @@
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid black;
+        padding: 5px;
+    }
+
+    th {
+        background: rgb(0, 128, 58);
+        color: white;
+    }
+
+    tr:nth-child(even) {
+        background: lightgray;
+    }
+
+    a {
+        text-decoration: none;
+        color: blue;
+    }
+</style>
+<table>
+    <thead>
+        <th>Item sold</th>
+        <th>Quantity</th>
+        <th>payment method</th>
+        <th>mpesa code</th>
+        <th>Price</th>
+
+    </thead>
+    <tbody>
+        {% for item in sales %}
+            <tr>
+                <td>{{ item.stock_item }}</td>
+                <td>{{ item.quantity_sold }}</td>
+                <td>{{ item.payment_method }}</td>
+                <td>{{ item.mpesa_code }}</td>
+                <td>{{ item.sale_price }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'cashier-dashboard' %}">Back</a>

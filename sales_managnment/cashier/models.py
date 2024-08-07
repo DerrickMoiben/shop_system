@@ -1,25 +1,31 @@
 from django.db import models
+from manager.models import Stock
+ 
 
 
-class Product(models.Model):
-    product_name = models.CharField(max_length=100)
-    product_price = models.FloatField()
-    product_quantity = models.IntegerField()
-    product_description = models.TextField()
-
-    def __str__(self):
-        return self.product_name
-    
-class Sale(models.Model):
+class Sales(models.Model):
     PAYMENT_METHOD_CHOICES = [
-        ('cash', 'Cash'),
+        ('Cash', 'Cash'),
         ('Mpesa', 'Mpesa'),
     ]
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
-    total_price = models.FloatField()
+
+    stock_item = models.ForeignKey(Stock, on_delete=models.CASCADE)
+    quantity_sold = models.PositiveIntegerField()
+    sale_price = models.FloatField(editable=False)
     payment_method = models.CharField(max_length=100, choices=PAYMENT_METHOD_CHOICES)
-    date = models.DateTimeField(auto_now_add=True)
+    mpesa_code = models.CharField(max_length=100, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        # Calculate the sale price
+        self.sale_price = self.quantity_sold * self.stock_item.product_price
+
+        #Ensure that is enough stock available
+        if self.stock_item.product_quantity < self.quantity_sold:
+            raise ValueError('Not enough stock available')
+        # Update the stock
+        self.stock_item.product_quantity -= self.quantity_sold
+        self.stock_item.save()
+        super(Sales, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.product.product_name} - {self.quantity} - {self.total_price} - {self.payment_method} - {self.date}"
+        return f'{self.stock_item.product_name} - {self.quantity_sold}'

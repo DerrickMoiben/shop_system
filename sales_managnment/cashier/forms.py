@@ -1,7 +1,10 @@
+from typing import Any
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Product, Sale
+from .models import  Sales
+from manager.forms import StockForm
+from manager.models import Stock
 
 
 class SingupForm(UserCreationForm):
@@ -12,30 +15,35 @@ class SingupForm(UserCreationForm):
 class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
-
-class SaleItemForm(forms.Form):
-    product = forms.ModelChoiceField(queryset=Product.objects.all())
-    quantity = forms.IntegerField(min_value=1)
     
+class SaleForm(forms.ModelForm):
+    calculated_sale_price = forms.FloatField(label='Sale Price', required=False, widget=forms.TextInput(attrs={'readonly': 'readonly'}))
 
-class SaleForm(forms.Form):
-    PAYMENT_METHOD_CHOICES = [
-        ('cash', 'Cash'),
-        ('Mpesa', 'Mpesa'),
-    ]
+    class Meta:
+        model = Sales
+        fields = ['stock_item', 'quantity_sold', 'payment_method', 'calculated_sale_price', 'mpesa_code']
 
-    item = forms.CharField(widget=forms.HiddenInput) #This will hold JSON data of the SaleItemForm
-    payment_method = forms.ChoiceField(choices=PAYMENT_METHOD_CHOICES)
-    payment_code = forms.CharField(max_length=100) #This will hold the Mpesa code  
+    def __init__(self, *args, **kwargs):
+        super(SaleForm, self).__init__(*args, **kwargs)
+        self.fields['mpesa_code'].required = False
+
+        # Set initial value for calculated_sale_price if instance exists
+        if self.instance.pk:
+            self.fields['calculated_sale_price'].initial = self.instance.quantity_sold * self.instance.stock_item.product_price
+        else:
+            self.fields['calculated_sale_price'].initial = 0  # Default initial value
 
     def clean(self):
         cleaned_data = super().clean()
-        item = cleaned_data.get('item')
-        payment_method = cleaned_data.get('payment_method')
-        payment_code = cleaned_data.get('payment_code')
+        stock_item = cleaned_data.get("stock_item")
+        quantity_sold = cleaned_data.get("quantity_sold")
 
-        if not item:
-            raise forms.ValidationError('Please add at least one item to the sale')
-        if payment_method == 'Mpesa' and not payment_code:
-            raise forms.ValidationError('Please provide the Mpesa code')
+        if stock_item and quantity_sold:
+            sale_price = quantity_sold * stock_item.product_price
+            cleaned_data['calculated_sale_price'] = sale_price
+        
         return cleaned_data
+
+    def save(self, commit=True):
+        self.instance.sale_price = self.cleaned_data['calculated_sale_price']
+        return super(SaleForm, self).save(commit)
