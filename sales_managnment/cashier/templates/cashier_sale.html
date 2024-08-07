@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sell product</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
     <style>
         body {
             min-width: 100vh;
@@ -23,6 +26,7 @@
 
         fieldset {
             display: flex;
+            gap: 5px;
             justify-content: space-between;
             align-items: center;
         }
@@ -69,29 +73,73 @@
         button[type="submit"] {
             margin-top: 15px;
         }
+
+        .btndel {
+            height: 10%;
+            margin: 0;
+            padding-block: 0;
+            background-color: rgb(187, 23, 23);
+            border-radius: 5px;
+        }
+
+        .quantity {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .inner {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 5px;
+            justify-content: space-between;
+        }
+        
+        .inner input {
+            flex: 2;
+        }
+        
+        .inner button {
+            flex: 1;
+        }
+        
+        #message, #error {
+            margin: 0;
+            transition: all 0.5s;
+        }
     </style>
 </head>
 <body>
     
     <form action="" id="myform" method="post">
         {% csrf_token %}
-        <p id="message"></p>
+        <p id="message" style="display: none;"></p>
+        <p id="error" style="display: none;"></p>
         <h3>Sell a product</h3>
         <fieldset>
             <legend>Item(s)</legend>
-            <div class="product_id">
+            <div class="product">
                 <label for="product_id">Product Id</label>
-                <input type="text" name="product_id" id="product_id" placeholder="eg. A001">
-                <input type="text" name="product_id2" id="" placeholder="eg. A001">
+                <input type="text" name="product_id" id="product_id" placeholder="eg. A001" data-id="0">
             </div>
 
-            <div class="quantity">
+            <div class="quantitybox">
                 <label for="quantity">Quantity</label>
-                <input type="number" name="quantity" id="quantity">
-                <input type="number" name="quantity2" id="">
+                <div class="quantity">
+                    <div class="inner">
+                        <input type="number" name="quantity" id="quantity" data-id="0">
+                        <button type="button" class="btndel" data-id="0" onclick="delFunction(this)">Remove</button>                        
+                    </div>
+                </div>
             </div>
         </fieldset>
-        <p><button type="button" id="btnadd">Add</button></p>
+        <p>
+            <button type="button" id="btnadd" onclick="addFunction()">
+                <i class="fas fa-plus-circle fa-1x"></i>
+                Add
+            </button>
+        </p>
 
         <label for="payment_method">Payment Method</label>
         <select name="payment_method" id="payment_method">
@@ -107,7 +155,10 @@
         <label for="amount">Amount</label>
         <input type="number" id="amount" readonly>
 
-        <button type="submit">Checkout</button>
+        <button type="submit">
+            <i class="fa fa-shopping-cart"></i>
+            Checkout
+        </button>
 
     </form>
 
@@ -130,57 +181,176 @@
                     confirmationCodeInput.removeAttribute('name')
                 }
             });
+            
+        });
 
-            const addbtn = document.getElementById('btnadd')
+        document.getElementById('myform').addEventListener('submit', function(evevt) {
+            event.preventDefault()
+            const form = document.getElementById('myform')
+            const formdata = new FormData(form)
+            var producsIds = document.querySelectorAll('input[name="product_id"]')
+            var quantities = document.querySelectorAll('input[name="quantity"]')
 
-            addbtn.addEventListener('click', function() {
+            var productValues = []
+            var quantityValues = []
 
+            quantities.forEach(function(input) {
+                quantityValues.push(input.value)
             })
 
-            document.getElementById('myform').addEventListener('submit', function(evevt) {
-                event.preventDefault()
-                const form = document.getElementById('myform')
-                const formdata = new FormData(form)
+            producsIds.forEach(function(input) {
+                productValues.push(input.value)
+            })
 
-                const data = {};
-        
-                formData.forEach((value, key) => {
-                    data[key] = value;
-                });
-        
+            const data = {};
+    
+            formdata.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            data.product_id = productValues
+            data.quantity = quantityValues
+    
+            
+            fetch("{% url 'sell' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                var success = document.getElementById('message')
+                success.style.display = 'block'
+                success.textContent = data.message
                 
-                fetch("{% url 'sell' %}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken'),
-                    },
-                    body: JSON.stringify(formdata)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('message').textContent = data.message
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
+                if (data.error) {
+                    var error = document.getElementById('error')
+                    error.style.display = 'block'
+                    error.textContent = data.error
+                }
+
+                form.reset()
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        })
+
+        //The function to add fields to the form
+        var cur_id = 1
+        function addFunction () {
+            const productContainer = document.querySelector('.product');
+            const quantityContainer = document.querySelector('.quantitybox')
+            const quantity = document.querySelector('.quantity')
+            
+            const x = document.createElement('div')
+            x.setAttribute('data-id', `${cur_id}`)
+            x.setAttribute('class', 'inner')
+            quantityContainer.appendChild(x)
+        
+            const newProductInput = document.createElement('input');
+            newProductInput.setAttribute('type', 'text');
+            newProductInput.setAttribute('name', 'product_id');
+            newProductInput.setAttribute('placeholder', 'eg. A001');
+            newProductInput.setAttribute('required', 'required')
+            newProductInput.setAttribute('data-id', `${cur_id}`)
+            productContainer.appendChild(newProductInput);
+        
+            const newQuantityInput = document.createElement('input');
+            newQuantityInput.setAttribute('type', 'number');
+            newQuantityInput.setAttribute('name', 'quantity');
+            newQuantityInput.setAttribute('data-id', `${cur_id}`)
+            x.appendChild(newQuantityInput)
+
+            const rowDelete = document.createElement('button')
+            rowDelete.setAttribute('class', 'btndel')
+            rowDelete.setAttribute('type', 'button')
+            rowDelete.setAttribute('onclick', 'delFunction(this)')
+            rowDelete.setAttribute('data-id', `${cur_id}`)
+            rowDelete.textContent = 'Remove'
+            x.appendChild(rowDelete)
+            
+
+            cur_id += 1
+        }
+
+        function formSubmit() {
+            const form = document.getElementById('myform')
+            const formdata = new FormData(form)
+            var producsIds = document.querySelectorAll('input[name="product_id"]')
+            var quantities = document.querySelectorAll('input[name="quantity"]')
+
+            var productValues = []
+            var quantityValues = []
+
+            quantities.forEach(function(input) {
+                quantityValues.push(input.value)
             })
 
-            function getCookie(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
+            producsIds.forEach(function(input) {
+                productValues.push(input.value)
+            })
+
+            const data = {};
+    
+            formdata.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            data.product_id = productValues
+            data.quantity = quantityValues
+    
+            
+            fetch("{% url 'sell' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('message').textContent = data.message
+                document.getElementById('error').textContent = data.error
+                //form.reset()
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function delFunction(button) {
+            var id = button.dataset.id
+            
+            var elements = document.querySelectorAll('[data-id]')
+
+            var filtered = Array.from(elements).filter(function(element) {
+                return element.getAttribute('data-id') === id
+            })
+
+            filtered.forEach(function(element) {
+                element.remove()
+            });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
                     }
                 }
-                return cookieValue;
             }
-        });
+            return cookieValue;
+        }
     </script>
 </body>
 </html>
