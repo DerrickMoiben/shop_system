@@ -1,12 +1,18 @@
-<body style="min-height: 100vh;">
-    <form action="" method="post">
+<body style="min-height: 100vh; background-color: #f0f8ff; display: flex; justify-content: center; align-items: center;">
+    <form action="" method="post" style="background-color: #e0f7fa; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
         {% csrf_token %}
-        <label for="usernmane">Username</label>
-        <input type="text" name="username" id="Username" placeholder="Enter your usrename">
-        <label for="passoword">password</label>
-        <input type="password" name="password" id="password">
-        <button type="submit">Login</button>
-        <h4><hr>OR <hr></h4>
-        <a href="{% url 'manager-sign-up' %}"><button type="button">Signup</button></a>
+        <h2 style="color: #007bb8; text-align: center;">Login</h2>
+        
+        <label for="username" style="color: #007bb8;">Username</label>
+        <input type="text" name="username" id="username" placeholder="Enter your username" style="width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #007bb8; border-radius: 5px;">
+
+        <label for="password" style="color: #007bb8;">Password</label>
+        <input type="password" name="password" id="password" placeholder="Enter your password" style="width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #007bb8; border-radius: 5px;">
+
+        <div style="text-align: center; margin-top: 15px;">
+            <button type="submit" style="background-color: #007bb8; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; width: auto; font-size: 16px;">Login</button>
+        </div>
+
+        <p style="text-align: center; color: #007bb8; margin-top: 20px;">Don't have an account? <a href="{% url 'manager-sign-up' %}" style="color: #007bb8; text-decoration: underline;">Sign up here</a></p>
     </form>
 </body>

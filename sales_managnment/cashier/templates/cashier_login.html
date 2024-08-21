@@ -61,6 +61,21 @@
         button[type="submit"] {
             margin-top: 15px;
         }
+
+        a {
+            text-align: center;
+            margin-top: 20px;
+            color: #007acc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body style="min-height: 100vh;">
@@ -74,5 +89,14 @@
         <h4><hr>OR <hr></h4>
         <a href="{% url 'cashier-sign-up' %}"><button type="button">Signup</button></a>
     </form>
+
+message
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
 </body>
 </html>
