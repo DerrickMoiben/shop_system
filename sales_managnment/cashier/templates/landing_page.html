@@ -4,25 +4,146 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <link rel="stylesheet" href="../static/css/main.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        main {
+            margin-top: 2.5em;
+            padding: 1em;
+        }
+
+        .row {
+            place-items: center;
+        }
+        .card {
+            padding: 1em;
+            padding-inline: 1em;
+            border-left: .5em solid teal;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            background-color: #fff;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .card:hover {
+            border-left: .5em solid transparent;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+            background-color: #f5f5f5;
+        }
+        
+
+        .ourservices h3 > span {
+            border-bottom: 3px solid chocolate;
+        }
+    </style>
+
+    <style>
+        * {
+            transition: all .15s ease-in-out;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: .5em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.524);
+        }
+
+        nav .logo {
+            background: linear-gradient(120deg, orange, rgb(255, 0, 102));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: black;
+        }
+
+        nav ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1em;
+        }
+
+        nav ul li {
+            cursor: pointer;
+        }
+
+        nav ul li:hover {
+            text-decoration: underline;
+        }
+
+        nav ul li:nth-child(1):hover + .down-arrow {
+            transform: rotate(1800deg);
+        }
+    </style>
 </head>
 <body>
     <!-- The navigation bar -->
-     <nav>
-        <div class="logo">
-            <a href="#">
-                <h4>Moiben Agrovet</h4>
-            </a>
-        </div>
-        <div class="nav-links">
-            <ul>
-                <li>Log in as:</li>
-                <li><a href="{% url 'manager-login' %}">Admin</a></li>
-                <li><a href="{% url 'cashier-login' %}">Cashier</a></li>
-            </ul>
-        </div>
-     </nav>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="#">
+                    <h4>Moiben Agrovet</h4>
+                </a>
+            </div>
+            <div class="nav-links">
+                <ul>
+                    <li>Services <i class="fa fas fa-angle-down down-arrow"></i></li>
+                    <li>About</li>
+                    <li>Contact Us</li>
+                </ul>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary btn-sm">Donate</button>
+                <button class="btn btn-primary btn-sm">Join Us</button>
+            </div>
+         </nav>
+    </header>
 
      <!-- The content of the body -->
+     <main>
+        <section class="row col-12">
+            <div class="ourservices col-md-4 p-2"><div class="card p-1">
+                <h3 class="center"><span>Our</span> Background</h3>
+    
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis ratione facilis velit error, a quis adipisci minima numquam quos voluptas assumenda animi eligendi quo commodi? Laboriosam dicta odit voluptatem veniam!</p>
+            </div></div>
+            <div class="ourservices col-md-4 p-2"><div class="card p-1">
+                <h3 class="center"><span>Our</span> Mission</h3>
+    
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis ratione facilis velit error, a quis adipisci minima numquam quos voluptas assumenda animi eligendi quo commodi? Laboriosam dicta odit voluptatem veniam!</p>
+            </div></div>
+            <div class="ourservices col-md-4 p-2"><div class="card p-1">
+                <h3 class="center"><span>Our</span> Vision</h3>
+    
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis ratione facilis velit error, a quis adipisci minima numquam quos voluptas assumenda animi eligendi quo commodi? Laboriosam dicta odit voluptatem veniam!</p>
+            </div></div>
+          </section>
+    
+          <section style="background-color: teal;" class="bg-green text-white text-center p-4">
+            <h4>Where your ideas are made a reality</h4>
+          </section>
+     </main>
 </body>
 </html>
