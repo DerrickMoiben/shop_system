@@ -14,6 +14,11 @@ def landing_page(request):
     """This modele is the landing page view when one clicks and opens the software."""
     return render(request, 'landing_page.html')
 
+
+def cashier_dashboard(request):
+    return render(request, 'cashier_dashboard.html')
+
+
 def cashier_sing_up(request):
     if request.method == "POST":
         form = SingupForm(request.POST)
@@ -45,7 +50,7 @@ def cashier_login(request):
 
 from django.contrib import messages
 
-def cashier_dashboard(request):
+def stock_add(request):
     if request.method == 'POST':
         form = SaleForm(request.POST)
         if form.is_valid():
@@ -63,13 +68,13 @@ def cashier_dashboard(request):
                 else:
                     sale.save()
                     messages.success(request, 'Sale was successful.')
-                    return redirect('cashier-dashboard')
+                    return redirect('stock_add')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         form = SaleForm()
 
-    return render(request, 'cashier_dashboard.html', {'form': form})
+    return render(request, 'stock_add.html', {'form': form})
 
 
 def sales_summary(request):
