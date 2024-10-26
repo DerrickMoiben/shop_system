@@ -15,9 +15,6 @@ def landing_page(request):
     return render(request, 'landing_page.html')
 
 
-def cashier_dashboard(request):
-    return render(request, 'cashier_dashboard.html')
-
 
 def cashier_sing_up(request):
     if request.method == "POST":
@@ -50,7 +47,7 @@ def cashier_login(request):
 
 from django.contrib import messages
 
-def stock_add(request):
+def cashier_dashboard(request):
     if request.method == 'POST':
         form = SaleForm(request.POST)
         if form.is_valid():
@@ -74,7 +71,7 @@ def stock_add(request):
     else:
         form = SaleForm()
 
-    return render(request, 'stock_add.html', {'form': form})
+    return render(request, 'cashier_dashboard.html', {'form': form})
 
 
 def sales_summary(request):

@@ -74,3 +74,4 @@ def edit_stock(request, stock_id):
         return redirect('all-stock')
     
     return render(request, 'edit_stock.html', {'stock': stock})
+
