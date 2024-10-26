@@ -6,7 +6,11 @@ from django.contrib.auth import authenticate, login
 from .models import Stock
 from django.shortcuts import get_object_or_404
 
+
 def admin_dashboard(request):
+    return render(request, 'admin_dashboard.html')
+
+def stock_add(request):
     if request.method == 'POST':
         form = StockForm(request.POST)
         if form.is_valid():
@@ -15,7 +19,7 @@ def admin_dashboard(request):
             return redirect('admin-dashboard')
     else:
         form = StockForm()
-    return render(request, 'admin_dashboard.html', {'form': form})
+    return render(request, 'stock_add.html', {'form': form})
 
 def manager_sing_up(request):
     if request.method == "POST":
