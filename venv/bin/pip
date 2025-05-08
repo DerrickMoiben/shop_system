@@ -1,4 +1,4 @@
-#!/home/kim/Projects/shop_system/venv/bin/python3
+#!/home/moiben/projects/shop_system/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

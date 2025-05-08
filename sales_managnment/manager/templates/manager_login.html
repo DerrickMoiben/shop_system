@@ -15,4 +15,11 @@
 
         <p style="text-align: center; color: #007bb8; margin-top: 20px;">Don't have an account? <a href="{% url 'manager-sign-up' %}" style="color: #007bb8; text-decoration: underline;">Sign up here</a></p>
     </form>
+    {% if messages %}
+        <div style="text-align: center; margin-top: 20px;">
+            {% for message in messages %}
+                <div style="color: red;">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
 </body>

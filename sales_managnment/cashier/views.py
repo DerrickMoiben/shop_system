@@ -65,7 +65,7 @@ def cashier_dashboard(request):
                 else:
                     sale.save()
                     messages.success(request, 'Sale was successful.')
-                    return redirect('stock_add')
+                    return redirect('stock-add')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
